@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOXYMOBILE | Future Smartphones. Future Experience.</title>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Space Grotesk & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           1. DESIGN TOKENS & VARIABLE ARCHITECTURE (Light / Dark Themes)
+           ========================================================================== */
+        :root[data-theme="dark"] {
+            --bg-primary: #050508;
+            --bg-secondary: #0b0b14;
+            --bg-glass: rgba(11, 11, 20, 0.65);
+            --bg-glass-nav: rgba(5, 5, 8, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #a855f7;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --accent-glow-secondary: rgba(168, 85, 247, 0.4);
+            --surface-card: rgba(255, 255, 255, 0.03);
+            --shadow-premium:0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --bg-glass: rgba(255, 255, 255, 0.75);
+            --bg-glass-nav: rgba(248, 250, 252, 0.85);
+            --border-glass: rgba(15, 23, 42, 0.08);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent-primary: #2563eb;
+            --accent-secondary: #7c3aed;
+            --accent-glow: rgba(37, 99, 235, 0.2);
+            --accent-glow-secondary: rgba(124, 58, 237, 0.15);
+            --surface-card: rgba(15, 23, 42, 0.02);
+            --shadow-premium: 0 20px 50px rgba(15, 23, 42, 0.08);
+        }
+
+        /* ==========================================================================
+           2. BASE RESETS & SCROLLBAR
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease, border-color 0.5s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6, .logo-text, .nav-link {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--accent-primary), var(--accent-secondary));
+            border-radius: 4px;
+        }
+
+        /* Ambient Background Nodes */
+        .ambient-glow-1 {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            z-index: -1;
+            pointer-events: none;
+            animation: floatingGlow 15s infinite alternate ease-in-out;
+        }
+        .ambient-glow-2 {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow-secondary) 0%, transparent 70%);
+            bottom: -200px;
+            right: -200px;
+            z-index: -1;
+            pointer-events: none;
+            animation: floatingGlow 20s infinite alternate-reverse ease-in-out;
+        }
+
+        @keyframes floatingGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 50px) scale(1.2); }
+        }
+
+        /* Scroll Progress Bar */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            z-index: 1000;
+        }
+
+        /* Cursor Glow Effect */
+        #cursor-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: screen;
+            display: none;
+        }
+        @media(min-width: 1025px) { #cursor-glow { display: block; } }
+
+        /* Generic Utility Components */
+        .section-padding {
+            padding: 100px 8% 60px 8%;
+        }
+        .glass-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), #67e8f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-premium {
+            position: relative;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            text-decoration: none;
+        }
+        .btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .btn-premium:hover::before {
+            opacity: 1;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-glass);
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+        }
+        .btn-secondary:hover {
+            background: var(--surface-card);
+            border-color: var(--accent-primary);
+        }
+
+        /* Reveal Animation on Scroll Class */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==========================================================================
+           3. INTRO CINEMATIC LOADING SCREEN
+           ========================================================================== */
+        #loader-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #030305;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s cubic-bezier(0.77, 0, 0.175, 1), visibility 0.8s;
+        }
+        .loader-logo-container {
+            position: relative;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .loader-logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: transparent;
+            background: linear-gradient(90deg, #fff, #3b82f6, #a855f7, #fff);
+            background-size: 300%;
+            -webkit-background-clip: text;
+            animation: shine 3s linear infinite;
+        }
+        .loader-tagline {
+            color: #64748b;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+        .loader-bar-container {
+            width: 260px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loader-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #a855f7);
+            box-shadow: 0 0 15px #3b82f6;
+            animation: fillProgress 2.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        .loader-status {
+            margin-top: 15px;
+            font-size: 0.75rem;
+            color: #3b82f6;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+        @keyframes shine { 0% { background-position: 0%; } 100% { background-position: 300%; } }
+        @keyframes fillProgress { 0% { width: 0%; } 100% { width: 100%; } }
+        @keyframes pulseGlow { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* ==========================================================================
+           4. STICKY HEADER & NAVIGATION
+           ========================================================================== */
+        header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 900;
+            padding: 20px 8%;
+            background: var(--bg-glass-nav);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-text span {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            position: relative;
+            padding: 8px 0;
+            transition: color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .icon-btn {
+            background: transparent;
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+        .icon-btn:hover {
+            background: var(--surface-card);
+            border-color: var(--accent-primary);
+        }
+        .cart-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: red; color: white;
+            font-size: 0.7rem; padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        /* Mobile View Navigation Collapse */
+        @media (max-width: 1024px) {
+            nav {
+                position: fixed;
+                top: 83px; left: -100%; width: 100%; height: calc(100vh - 83px);
+                background: var(--bg-primary);
+                flex-direction: column;
+                padding: 50px 0;
+                gap: 30px;
+                transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+                border-top: 1px solid var(--border-glass);
+                z-index: 899;
+            }
+            nav.mobile-active { left: 0; }
+            .menu-toggle { display: block; }
+        }
+
+        /* ==========================================================================
+           5. SECTIONAL LAYOUTS (Home, Shop, Details, etc.)
+           ========================================================================== */
+        
+        /* PAGE WRAPPERS & HANDLING SYSTEM */
+        .page-section {
+            display: none;
+        }
+        .page-section.active-section {
+            display: block;
+            animation: sectionFadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes sectionFadeIn {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 5.1 HOME HERO SECTION */
+        .hero-container {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            align-items: center;
+            min-height: 90vh;
+            gap: 40px;
+        }
+        .hero-text-content h1 {
+            font-size: 4.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            letter-spacing: -1px;
+        }
+        .hero-text-content p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+        .hero-cta-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+        .hero-stats {
+            display: flex;
+            gap: 50px;
+            border-top: 1px solid var(--border-glass);
+            padding-top: 30px;
+        }
+        .stat-node h3 { font-size: 2.2rem; font-weight: 700; color: var(--text-primary); }
+        .stat-node p { font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;}
+        
+        .hero-showcase {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mockup-sphere {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            background: linear-gradient(135deg, var(--accent-glow), var(--accent-glow-secondary));
+            border-radius: 50%;
+            filter: blur(40px);
+            animation: pulseGlow 4s infinite alternate;
+        }
+        .phone-mockup {
+            width: 85%;
+            max-width: 340px;
+            height: 600px;
+            border: 12px solid #1e293b;
+            border-radius: 45px;
+            background: #000;
+            box-shadow: var(--shadow-premium), 0 0 40px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+            animation: floatAnimation 6s infinite ease-in-out;
+            transform-style: preserve-3d;
+        }
+        .phone-mockup img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.95;
+        }
+        .phone-island {
+            position: absolute;
+            top: 15px; left: 50%; transform: translateX(-50%);
+            width: 75px; height: 18px; background: #000; border-radius: 20px;
+            z-index: 10;
+            box-shadow: inset 0 0 4px rgba(255,255,255,0.4);
+        }
+        @keyframes floatAnimation {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        /* BRAND LOGOS MARQUEE */
+        .brands-marquee {
+            overflow: hidden;
+            padding: 40px 0;
+            border-top: 1px solid var(--border-glass);
+            border-bottom: 1px solid var(--border-glass);
+            margin: 60px 0;
+            background: var(--surface-card);
+        }
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            gap: 80px;
+            animation: marquee 25s linear infinite;
+        }
+        .marquee-track span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            opacity: 0.4;
+            transition: opacity 0.3s;
+        }
+        .marquee-track span:hover { opacity: 1; color: var(--accent-primary); }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
+
+        /* FEATURED SLIDER HOME */
+        .slider-section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
+        }
+        .slider-wrapper {
+            position: relative;
+            overflow: hidden;
+            padding: 20px 0;
+        }
+        .slider-track {
+            display: flex;
+            gap: 30px;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .slider-card {
+            min-width: 320px;
+            width: 320px;
+        }
+
+        /* 5.2 SHOP SYSTEM GRID */
+        .shop-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+        .filter-sidebar {
+            padding: 30px;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+        .filter-group { margin-bottom: 30px; }
+        .filter-group h4 { font-size: 1.1rem; margin-bottom: 15px; font-weight: 600;}
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 20px 14px 45px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            border-radius: 50px;
+            color: var(--text-primary);
+            outline: none;
+        }
+        .search-wrapper input:focus { border-color: var(--accent-primary); }
+        .search-wrapper i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+        
+        .brand-tab {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: 0.3s;
+        }
+        .brand-tab:hover, .brand-tab.active-tab {
+            background: var(--surface-card);
+            color: var(--text-primary);
+            border-left: 3px solid var(--accent-primary);
+        }
+        
+        .products-view-panel h3 { margin-bottom: 25px; font-size: 1.8rem; }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        /* PREMIUM PRODUCT CARD */
+        .product-card {
+            position: relative;
+            padding: 24px;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-premium), 0 0 25px var(--accent-glow);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        .card-wishlist {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: transparent; border: none;
+            color: var(--text-secondary); cursor: pointer; font-size: 1.2rem;
+            z-index: 5;
+        }
+        .card-wishlist:hover { color: #ef4444; }
+        .card-img-holder {
+            width: 100%; height: 220px;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 20px; background: rgba(255,255,255,0.01);
+            border-radius: 16px; position: relative;
+        }
+        .card-img-holder img {
+            max-height: 180px; max-width: 100%;
+            object-fit: contain; transition: transform 0.5s;
+        }
+        .product-card:hover .card-img-holder img { transform: scale(1.08); }
+        .card-brand-label { font-size: 0.75rem; text-transform: uppercase; color: var(--accent-primary); letter-spacing: 1px; font-weight:600; margin-bottom: 4px; }
+        .card-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); cursor: pointer; }
+        .card-rating { font-size: 0.8rem; color: #f59e0b; margin-bottom: 15px; }
+        .card-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--border-glass); padding-top: 15px; margin-top: auto;
+        }
+        .card-price { font-size: 1.3rem; font-weight: 700; color: var(--text-primary); }
+        .card-add-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--text-primary); color: var(--bg-primary);
+            border: none; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.3s;
+        }
+        .product-card:hover .card-add-btn { background: var(--accent-primary); color: white; }
+
+        /* 5.3 PRODUCT DETAILS PAGE */
+        .details-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-top: 40px;
+        }
+        .details-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .main-img-view {
+            width: 100%; height: 500px;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; position: relative;
+        }
+        .main-img-view img { max-height: 400px; object-fit: contain; width: auto; transition: transform 0.3s; }
+        .main-img-view:hover img { transform: scale(1.15); }
+        
+        .gallery-thumbs { display: flex; gap: 15px; justify-content: center; }
+        .thumb-node {
+            width: 80px; height: 80px; padding: 10px; cursor: pointer; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center; background: var(--bg-secondary);
+        }
+        .thumb-node.active-thumb { border: 2px solid var(--accent-primary); }
+        .thumb-node img { max-height: 100%; object-fit: contain; }
+
+        .details-meta-info h2 { font-size: 2.8rem; margin-bottom: 10px; }
+        .details-rating { color: #f59e0b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;}
+        .details-price { font-size: 2.2rem; font-weight: 700; margin-bottom: 30px; }
+        
+        .variant-selector { margin-bottom: 25px; }
+        .variant-selector h5 { font-size: 0.9rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
+        .variant-choices { display: flex; gap: 15px; }
+        .choice-pill {
+            padding: 10px 24px; border: 1px solid var(--border-glass); border-radius: 30px;
+            cursor: pointer; font-weight: 500; font-size: 0.9rem;
+        }
+        .choice-pill.active-pill { border-color: var(--accent-primary); background: var(--surface-card); }
+        
+        .color-dot {
+            width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+            border: 3px solid transparent;
+        }
+        .color-dot.active-dot { border-color: var(--text-primary); }
+
+        .details-action-block { display: flex; gap: 20px; margin: 40px 0; }
+        
+        /* DETAILS TABS SPECIFICATIONS */
+        .detail-tabs-nav {
+            display: flex; gap: 30px; border-bottom: 1px solid var(--border-glass);
+            margin-top: 60px; margin-bottom: 25px;
+        }
+        .tab-trigger {
+            padding: 12px 0; font-family: 'Space Grotesk', sans-serif; cursor: pointer;
+            color: var(--text-secondary); font-weight: 600; position: relative;
+        }
+        .tab-trigger.active-trigger { color: var(--text-primary); }
+        .tab-trigger.active-trigger::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px;
+            background: var(--accent-primary);
+        }
+        .specs-table { width: 100%; border-collapse: collapse; }
+        .specs-table td { padding: 16px 20px; border-bottom: 1px solid var(--border-glass); }
+        .specs-table td:first-child { color: var(--text-secondary); font-weight: 500; width: 35%; }
+
+        /* 5.4 ABOUT PAGE STYLES */
+        .about-hero { text-align: center; max-width: 800px; margin: 0 auto 80px auto; }
+        .about-hero h2 { font-size: 3.5rem; margin-bottom: 20px; }
+        .timeline-container { position: relative; max-width: 900px; margin: 0 auto; padding: 40px 0; }
+        .timeline-container::before {
+            content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 100%;
+            background: var(--border-glass); transform: translateX(-50%);
+        }
+        .timeline-item { position: relative; width: 50%; padding: 20px 40px; box-sizing: border-box; }
+        .timeline-item:nth-child(odd) { left: 0; text-align: right; }
+        .timeline-item:nth-child(even) { left: 50%; text-align: left; }
+        .timeline-dot {
+            position: absolute; top: 30px; width: 16px; height: 16px; border-radius: 50%;
+            background: var(--accent-primary); box-shadow: 0 0 10px var(--accent-primary); z-index: 2;
+        }
+        .timeline-item:nth-child(odd) .timeline-dot { right: -8px; }
+        .timeline-item:nth-child(even) .timeline-dot { left: -8px; }
+        .timeline-item:bg-glass-nav .timeline-dot { display: none; }
+        .timeline-card { padding: 24px; border-radius: 16px; }
+        .timeline-card h4 { font-size: 1.3rem; margin-bottom: 10px; color: var(--accent-primary); }
+
+        /* 5.5 SERVICES CARDS GRID */
+        .grid-3-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .service-card {
+            padding: 40px 30px; text-align: center; border-radius: 24px;
+            transition: transform 0.4s, box-shadow 0.4s;
+        }
+        .service-card:hover {
+            transform: translateY(-5px); box-shadow: var(--shadow-premium);
+            border-color: var(--accent-secondary);
+        }
+        .service-icon-box {
+            width: 70px; height: 70px; border-radius: 20px; margin: 0 auto 25px auto;
+            background: var(--surface-card); border: 1px solid var(--border-glass);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.8rem; color: var(--accent-primary);
+        }
+
+        /* 5.6 OFFERS & FLASH SALE */
+        .flash-sale-banner {
+            padding: 60px; border-radius: 32px;
+            background: linear-gradient(135deg, rgba(11,11,20,0.9), rgba(59,130,246,0.1));
+            border: 1px solid var(--border-glass);
+            display: grid; grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 40px;
+            margin-bottom: 60px;
+        }
+        .countdown-container { display: flex; gap: 15px; margin: 30px 0; }
+        .countdown-box {
+            background: var(--bg-secondary); border: 1px solid var(--border-glass);
+            padding: 15px 20px; border-radius: 16px; min-width: 80px; text-align: center;
+        }
+        .countdown-box span { font-size: 1.8rem; font-weight: 700; display: block; }
+        .countdown-box label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
+
+        /* 5.7 TESTIMONIAL SLIDER */
+        .testimonial-carousel {
+            max-width: 850px; margin: 50px auto 0 auto; position: relative; overflow: hidden;
+        }
+        .testimonial-track { display: flex; transition: transform 0.5s ease-in-out; }
+        .testimonial-node {
+            min-width: 100%; box-sizing: border-box; padding: 40px; text-align: center;
+        }
+        .testi-avatar {
+            width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+            margin: 0 auto 20px auto; border: 3px solid var(--accent-primary);
+        }
+        .testi-quote { font-size: 1.3rem; line-height: 1.6; margin-bottom: 25px; color: var(--text-primary); font-style: italic; }
+        .testi-profile h5 { font-size: 1.1rem; color: var(--accent-secondary); }
+
+        /* 5.8 CONTACT & FAQ ACCOUDION */
+        .contact-layout {
+            display: grid; grid-template-columns: 1fr 1.2fr; gap: 50px; margin-top: 40px;
+        }
+        .contact-form-panel { padding: 40px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-secondary); }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 14px 20px; background: var(--bg-secondary); border: 1px solid var(--border-glass);
+            border-radius: 12px; color: var(--text-primary); outline: none;
+        }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-primary); }
+        
+        .faq-section { margin-top: 80px; }
+        .faq-accordion { max-width: 900px; margin: 40px auto 0 auto; }
+        .faq-item { border-radius: 16px; margin-bottom: 15px; overflow: hidden; border: 1px solid var(--border-glass); }
+        .faq-header {
+            padding: 22px 30px; background: var(--bg-glass); display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; font-weight: 600;
+        }
+        .faq-body {
+            max-height: 0; padding: 0 30px; background: transparent; overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease; color: var(--text-secondary); line-height: 1.6;
+        }
+        .faq-item.active-faq .faq-body { max-height: 200px; padding: 20px 30px 30px 30px; }
+        .faq-item.active-faq .faq-header i { transform: rotate(180deg); color: var(--accent-primary); }
+
+        /* ==========================================================================
+           6. FOOTER DESIGN
+           ========================================================================== */
+        footer {
+            border-top: 1px solid var(--border-glass); background: var(--bg-secondary);
+            padding: 80px 8% 30px 8%; margin-top: 100px; position: relative;
+        }
+        .footer-grid {
+            display: grid; grid-template-columns: 1.5fr repeat(3, 1fr); gap: 40px; margin-bottom: 50px;
+        }
+        .footer-brand-pane p { color: var(--text-secondary); margin-top: 15px; margin-bottom: 25px; line-height: 1.6;}
+        .social-row { display: flex; gap: 15px; }
+        .footer-links-pane h5 { font-size: 1.1rem; margin-bottom: 20px; font-weight: 600;}
+        .footer-links-pane ul { list-style: none; }
+        .footer-links-pane ul li { margin-bottom: 12px; }
+        .footer-links-pane ul li a { text-decoration: none; color: var(--text-secondary); transition: 0.3s; }
+        .footer-links-pane ul li a:hover { color: var(--accent-primary); padding-left: 5px; }
+        
+        .newsletter-box { display: flex; gap: 10px; margin-top: 15px; }
+        .newsletter-box input {
+            padding: 12px 18px; background: var(--bg-primary); border: 1px solid var(--border-glass);
+            border-radius: 30px; color: var(--text-primary); flex-grow: 1; outline: none;
+        }
+        .footer-bottom {
+            border-top: 1px solid var(--border-glass); padding-top: 30px; text-align: center;
+            font-size: 0.85rem; color: var(--text-secondary);
+        }
+
+        /* Back to top feature button */
+        #back-to-top {
+            position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none; border-radius: 50%; color: white; display: none; justify-content: center;
+            align-items: center; cursor: pointer; z-index: 100; box-shadow: 0 10px 20px var(--accent-glow);
+        }
+
+        /* ==========================================================================
+           7. COMPREHENSIVE RESPONSIVENESS MEDIA QUERIES
+           ========================================================================== */
+        @media (max-width: 1200px) {
+            .hero-text-content h1 { font-size: 3.5rem; }
+            .details-wrapper { grid-template-columns: 1fr; gap: 40px; }
+        }
+        @media (max-width: 992px) {
+            .hero-container { grid-template-columns: 1fr; text-align: center; }
+            .hero-text-content p { margin: 0 auto 30px auto; }
+            .hero-cta-group { justify-content: center; }
+            .hero-stats { justify-content: center; }
+            .shop-layout { grid-template-columns: 1fr; }
+            .filter-sidebar { position: static; width: 100%; }
+            .contact-layout { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .flash-sale-banner { grid-template-columns: 1fr; text-align: center; }
+            .countdown-container { justify-content: center; }
+        }
+        @media (max-width: 600px) {
+            .hero-text-content h1 { font-size: 2.6rem; }
+            .section-padding { padding: 80px 5% 40px 5%; }
+            .hero-stats { gap: 25px; }
+            .timeline-container::before { left: 20px; }
+            .timeline-item { width: 100%; padding-left: 45px; padding-right: 0; text-align: left !important; }
+            .timeline-dot { left: 12px !important; }
+            .timeline-item:nth-child(even) { left: 0; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Scroll Progress Indicator -->
+    <div id="scroll-progress"></div>
+
+    <!-- Interactive Cursor Glow Object -->
+    <div id="cursor-glow"></div>
+
+    <!-- Cinematic Background Ambient Glow Elements -->
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+
+    <!-- 1. INTRO CINEMATIC LOADING SCREEN -->
+    <div id="loader-wrapper">
+        <div class="loader-logo-container">
+            <div class="loader-logo">NOXYMOBILE</div>
+            <div class="loader-tagline">Quantum Architecture</div>
+        </div>
+        <div class="loader-bar-container">
+            <div class="loader-bar"></div>
+        </div>
+        <div class="loader-status" id="loader-status-text">Initializing Systems...</div>
+    </div>
+
+    <!-- 2. STICKY HEADER & NAVBAR -->
+    <header>
+        <a href="#home" class="logo-text" onclick="switchPage('home')">NOXY<span>MOBILE</span></a>
+        
+        <nav id="navbar-links">
+            <a href="#home" class="nav-link active" onclick="switchPage('home')">Home</a>
+            <a href="#shop" class="nav-link" onclick="switchPage('shop')">Shop</a>
+            <a href="#details" class="nav-link" onclick="switchPage('details')">Products</a>
+            <a href="#about" class="nav-link" onclick="switchPage('about')">About</a>
+            <a href="#services" class="nav-link" onclick="switchPage('services')">Services</a>
+            <a href="#offers" class="nav-link" onclick="switchPage('offers')">Offers</a>
+            <a href="#testimonials" class="nav-link" onclick="switchPage('testimonials')">Reviews</a>
+            <a href="#contact" class="nav-link" onclick="switchPage('contact')">Contact</a>
+        </nav>
+
+        <div class="nav-actions">
+            <!-- Dark / Light Dynamic Mode UI Switch -->
+            <button class="icon-btn" id="theme-toggle-btn" title="Toggle System Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <button class="icon-btn" title="Open Shopping Bag" onclick="switchPage('shop')">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="cart-badge" id="cart-counter">0</span>
+            </button>
+            <div class="menu-toggle" id="mobile-menu-icon">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- ==========================================================================
+       MAIN VIEWPORT CONTAINER HOLDING 8 FUNCTIONAL SECTIONAL PAGES
+       ========================================================================== */ -->
+    <main style="margin-top: 85px;">
+
+        <!-- 3.1 HOME PAGE SECTION -->
+        <section id="home" class="page-section active-section section-padding">
+            <div class="hero-container">
+                <div class="hero-text-content">
+                    <h1 class="reveal active">Future Smartphones.<br><span class="text-gradient">Future Experience.</span></h1>
+                    <p class="reveal active">Step into the next generation of intelligence. Noxymobile brings together revolutionary transparent design aesthetics, neural-core AI processors, and cinematic displays engineered for digital pioneers.</p>
+                    <div class="hero-cta-group reveal active">
+                        <a href="#shop" class="btn-premium" onclick="switchPage('shop')">Explore Shop <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="#offers" class="btn-secondary" onclick="switchPage('offers')">View Deals</a>
+                    </div>
+                    <div class="hero-stats reveal active">
+                        <div class="stat-node">
+                            <h3 class="counter-val" data-target="45">0</h3>
+                            <p>Global Outlets</p>
+                        </div>
+                        <div class="stat-node">
+                            <h3 class="counter-val" data-target="280">0</h3>
+                            <p>K+ Happy Users</p>
+                        </div>
+                        <div class="stat-node">
+                            <h3 class="counter-val" data-target="99">0</h3>
+                            <p>Premium Rating %</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Updated showcase matching iPhone 17 design profiles -->
+                <div class="hero-showcase reveal active">
+                    <div class="mockup-sphere"></div>
+                    <div class="phone-mockup">
+                        <div class="phone-island"></div>
+                        <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80" alt="iPhone 17 Form Factor Showcase Module">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brand Marquee Module -->
+            <div class="brands-marquee">
+                <div class="marquee-track">
+                    <span>APPLE</span><span>SAMSUNG</span><span>ONEPLUS</span><span>XIAOMI</span><span>VIVO</span><span>OPPO</span><span>REALME</span><span>GOOGLE PIXEL</span>
+                    <span>APPLE</span><span>SAMSUNG</span><span>ONEPLUS</span><span>XIAOMI</span><span>VIVO</span><span>OPPO</span><span>REALME</span><span>GOOGLE PIXEL</span>
+                </div>
+            </div>
+
+            <!-- Home Page Featured Slider Section -->
+            <div class="slider-section-head reveal">
+                <div>
+                    <h2 style="font-size: 2.2rem;">Trending Devices</h2>
+                    <p style="color: var(--text-secondary);">The pinnacle of engineering and craft architecture.</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="icon-btn" onclick="slideFeatured(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="icon-btn" onclick="slideFeatured(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="slider-wrapper reveal">
+                <div class="slider-track" id="featured-slider-track">
+                    <!-- Dynamic Loading via JavaScript Core -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3.2 SHOP PAGE SECTION -->
+        <section id="shop" class="page-section section-padding">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h2 style="font-size: 2.8rem;">E-Commerce Hyper-Grid</h2>
+                <p style="color: var(--text-secondary);">Filter through premium smartphone portfolios natively optimized for fast operations.</p>
+            </div>
+            
+            <div class="shop-layout">
+                <!-- Advanced Filtering Sidebar Panel -->
+                <aside class="filter-sidebar glass-panel">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="product-search-input" placeholder="Search smartphones...">
+                    </div>
+                    <div class="filter-group">
+                        <h4>Brand Matrices</h4>
+                        <div class="brand-tab active-tab" data-brand="all"><i class="fa-solid fa-layer-group"></i> All Brands</div>
+                        <div class="brand-tab" data-brand="Apple"><i class="fa-brands fa-apple"></i> Apple</div>
+                        <div class="brand-tab" data-brand="Samsung"><i class="fa-solid fa-mobile-screen"></i> Samsung</div>
+                        <div class="brand-tab" data-brand="OnePlus"><i class="fa-solid fa-plus"></i> OnePlus</div>
+                        <div class="brand-tab" data-brand="Google"><i class="fa-brands fa-google"></i> Google Pixel</div>
+                    </div>
+                </aside>
+
+                <!-- Grid Products Display Section -->
+                <div class="products-view-panel">
+                    <h3 id="shop-results-heading">Showing All Available Devices</h3>
+                    <div class="products-grid" id="main-shop-products-grid">
+                        <!-- Populated completely using JS array engine rendering -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3.3 PRODUCT DETAILS PAGE SECTION -->
+        <section id="details" class="page-section section-padding">
+            <div class="details-wrapper">
+                <!-- Media Gallery Unit Component -->
+                <div class="details-gallery">
+                    <div class="main-img-view glass-panel">
+                        <img id="detail-main-img" src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80" alt="Product Display Zoom">
+                    </div>
+                    <div class="gallery-thumbs">
+                        <div class="thumb-node active-thumb" onclick="changeDetailThumb(this, 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80')">
+                            <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80" alt="Thumb 1">
+                        </div>
+                        <div class="thumb-node" onclick="changeDetailThumb(this, 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80')">
+                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80" alt="Thumb 2">
+                        </div>
+                        <div class="thumb-node" onclick="changeDetailThumb(this, 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80')">
+                            <img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80" alt="Thumb 3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Operational Metadata Configurations -->
+                <div class="details-meta-info">
+                    <h2 id="detail-title">Noxy iPhone 17 Carbon Pro</h2>
+                    <div class="details-rating">
+                        <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+                        <span>(4.9 Star Verified Customer Index)</span>
+                    </div>
+                    <div class="details-price text-gradient" id="detail-price">$1,199.00</div>
+                    
+                    <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 30px;">Reimagining premium computing. The Noxy iteration of the iPhone 17 introduces streamlined sub-display sensor elements and an updated acoustic graphene sound board layout.</p>
+                    
+                    <div class="variant-selector">
+                        <h5>Memory Matrices</h5>
+                        <div class="variant-choices">
+                            <div class="choice-pill active-pill">256GB Neural-Cache</div>
+                            <div class="choice-pill">512GB Hyper-Vault</div>
+                            <div class="choice-pill">1TB Chrono-Drive</div>
+                        </div>
+                    </div>
+
+                    <div class="variant-selector">
+                        <h5>Chroma Hue Finishes</h5>
+                        <div class="variant-choices" style="gap: 20px; align-items: center;">
+                            <div class="color-dot active-dot" style="background: #1e293b;" onclick="selectColorDot(this)"></div>
+                            <div class="color-dot" style="background: #e2e8f0;" onclick="selectColorDot(this)"></div>
+                            <div class="color-dot" style="background: #7c3aed;" onclick="selectColorDot(this)"></div>
+                        </div>
+                    </div>
+
+                    <div class="details-action-block">
+                        <button class="btn-premium" onclick="triggerAddToCartAction()">Deploy To Bag <i class="fa-solid fa-cart-plus"></i></button>
+                        <button class="btn-secondary" onclick="alert('Proceeding directly to institutional encrypted checkout terminal.')">Instant Acquisition</button>
+                    </div>
+
+                    <!-- Internal Animated Specification Navigation Tabs -->
+                    <div class="detail-tabs-nav">
+                        <div class="tab-trigger active-trigger" onclick="switchDetailTab(this, 'specs-tab-content')">Specifications Matrix</div>
+                        <div class="tab-trigger" onclick="switchDetailTab(this, 'reviews-tab-content')">User Intelligence Reviews</div>
+                    </div>
+                    <div id="specs-tab-content" class="tab-data-panel">
+                        <table class="specs-table glass-panel">
+                            <tr><td>Neural Core Processor</td><td>A19 Ultra Bionic Compute Engine</td></tr>
+                            <tr><td>Display Array</td><td>6.7" Sub-Panel Dynamic 120Hz Matrix</td></tr>
+                            <tr><td>Optics Arrays</td><td>48MP Telephoto Array + Spatial Audio Logic</td></tr>
+                            <tr><td>Energy Density</td><td>Graphene Pack Isolation Array</td></tr>
+                        </table>
+                    </div>
+                    <div id="reviews-tab-content" class="tab-data-panel" style="display: none;">
+                        <div class="glass-panel" style="padding: 20px; line-height: 1.6; color: var(--text-secondary);">
+                            <p><strong>Elena R. (Cyber-Security Architect)</strong> - ★★★★★<br>"The display refresh responses are immaculate. The updated chassis profile fits perfectly with next-gen wireless interface peripherals."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3.4 ABOUT COMPANY PAGE SECTION -->
+        <section id="about" class="page-section section-padding">
+            <div class="about-hero reveal">
+                <h2>Forging The Digital Renaissance</h2>
+                <p style="color: var(--text-secondary); font-size: 1.2rem;">We do not design consumer mobile devices; we architect essential hardware nodes for the upcoming era of pervasive cybernetic computing. Founded at the crossroad of art and quantum processing.</p>
+            </div>
+
+            <!-- Animated Milestone Timeline Module -->
+            <div class="timeline-container">
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card glass-panel">
+                        <h4>2022 — Genesis Protocol</h4>
+                        <p>NOXYMOBILE materialized from an elite coalition of avant-garde industrial designers and software engineers seeking to fracture legacy smartphone patterns.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card glass-panel">
+                        <h4>2024 — Transparency Manifesto</h4>
+                        <p>Launched the iconic Noxy Air Lineage featuring fully transparent liquid-crystal backing modules and structural glass frameworks.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card glass-panel">
+                        <h4>2026 — Pervasive Neural Matrix</h4>
+                        <p>Deploying sovereign on-device large language operations models across all production devices without reliance on centralized server relays.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3.5 SERVICES PAGE SECTION -->
+        <section id="services" class="page-section section-padding">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h2 style="font-size: 2.8rem;">Ecosystem Protection Services</h2>
+                <p style="color: var(--text-secondary);">Enterprise maintenance assurances optimized for seamless physical uptime recovery.</p>
+            </div>
+            
+            <div class="grid-3-col">
+                <div class="service-card glass-panel reveal">
+                    <div class="service-icon-box"><i class="fa-solid fa-microchip"></i></div>
+                    <h3>Core Diagnostic Repair</h3>
+                    <p style="color: var(--text-secondary); margin-top: 10px; font-size: 0.9rem; line-height: 1.6;">Component level structural rework and neural logic repairs inside pristine cleanroom chambers.</p>
+                </div>
+                <div class="service-card glass-panel reveal">
+                    <div class="service-icon-box"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <h3>Screen Replacement Array</h3>
+                    <p style="color: var(--text-secondary); margin-top: 10px; font-size: 0.9rem; line-height: 1.6;">Precision realignment calibration of active OLED matrix layers with factory tolerance settings.</p>
+                </div>
+                <div class="service-card glass-panel reveal">
+                    <div class="service-icon-box"><i class="fa-solid fa-terminal"></i></div>
+                    <h3>Sovereign Software Support</h3>
+                    <p style="color: var(--text-secondary); margin-top: 10px; font-size: 0.9rem; line-height: 1.6;">Direct physical firmware compilation, cryptographic partition resets, and secure image data extraction.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3.6 OFFERS & PROMOTIONS PAGE SECTION -->
+        <section id="offers" class="page-section section-padding">
+            <!-- Cinematic Flash Sale Promotion Board -->
+            <div class="flash-sale-banner reveal">
+                <div>
+                    <span style="background: rgba(59,130,246,0.2); color: #3b82f6; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; letter-spacing: 2px;">SYSTEM FLASH CONVERGENCE</span>
+                    <h2 style="font-size: 3rem; margin-top: 15px; line-height: 1.1;">Noxy Alpha Pro Tier Drops</h2>
+                    <p style="color: var(--text-secondary); margin-top: 10px;">Acquire immediate institutional price concessions on early engineering development models.</p>
+                    
+                    <div class="countdown-container">
+                        <div class="countdown-box"><span id="timer-hours">04</span><label>Hours</label></div>
+                        <div class="countdown-box"><span id="timer-mins">18</span><label>Mins</label></div>
+                        <div class="countdown-box"><span id="timer-secs">42</span><label>Secs</label></div>
+                    </div>
+                    
+                    <a href="#shop" class="btn-premium" onclick="switchPage('shop')">Claim Allocation Portal</a>
+                </div>
+                <div style="text-align: center;">
+                    <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=500&q=80" alt="Flash Allocation Module Device" style="max-height: 350px; filter: drop-shadow(0 0 30px var(--accent-glow));">
+                </div>
+            </div>
+
+            <!-- Subsidiary Promotional Grid Structures -->
+            <div class="grid-3-col">
+                <div class="glass-panel reveal" style="padding: 30px;">
+                    <h4 style="font-size: 1.3rem; margin-bottom: 10px; color: var(--accent-primary);">Hardware Legacy Trade-in Matrix</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">Relinquish legacy processing platforms from any manufacturing ecosystem for up to $800 in active structural credits.</p>
+                    <span style="font-weight: bold; font-family: 'Space Grotesk';">CODE: METAMORPHOSIS</span>
+                </div>
+                <div class="glass-panel reveal" style="padding: 30px;">
+                    <h4 style="font-size: 1.3rem; margin-bottom: 10px; color: var(--accent-secondary);">Zero-Point Amortization (EMI)</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">Distribute ecosystem deployment costs across 24 separate billing intervals with absolutely zero interest overhead.</p>
+                    <span style="font-weight: bold; font-family: 'Space Grotesk';">0% Capital Friction</span>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3.7 TESTIMONIALS REVIEWS PAGE SECTION -->
+        <section id="testimonials" class="page-section section-padding">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="font-size: 2.8rem;">Ecosystem Node Feedback</h2>
+                <p style="color: var(--text-secondary);">Direct intelligence assessments from certified global operations controllers.</p>
+            </div>
+
+            <div class="testimonial-carousel glass-panel reveal">
+                <div class="testimonial-track" id="testimonial-slider-track">
+                    <div class="testimonial-node">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="Avatar Node Alpha" class="testi-avatar">
+                        <p class="testi-quote">"The transparent execution architecture isn't visual showmanship. The structural heat dissipation profiles under continuous vector calculation cycles completely surpass typical device metrics."</p>
+                        <div class="testi-profile">
+                            <h5>Marcus Vance</h5>
+                            <p style="color: var(--text-secondary); font-size: 0.8rem;">Lead Infrastructure Architect, NeuraLink Systems</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-node">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80" alt="Avatar Node Beta" class="testi-avatar">
+                        <p class="testi-quote">"Operating local artificial neural models directly on my device changes the privacy landscape entirely. No latency delays, completely air-gapped system isolation workflows."</p>
+                        <div class="testi-profile">
+                            <h5>Dr. Sarah Jenkins</h5>
+                            <p style="color: var(--text-secondary); font-size: 0.8rem;">Quantum Cryptography Fellow</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3.8 CONTACT & FAQ ACCOUDION PAGE SECTION -->
+        <section id="contact" class="page-section section-padding">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h2 style="font-size: 2.8rem;">Establish Core Connection</h2>
+                <p style="color: var(--text-secondary);">Transmit secure inquiries directly to our regional operational headquarters.</p>
+            </div>
+
+            <div class="contact-layout">
+                <!-- Informational Coordinates Panel -->
+                <div style="display: flex; flex-direction: column; gap: 25px;">
+                    <div class="glass-panel reveal" style="padding: 30px;">
+                        <h4 style="margin-bottom: 15px; font-family: 'Space Grotesk'; font-size: 1.2rem;">Physical Command Terminal</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+                            Vector Block 9, Cybernetics Corridor<br>
+                            Neo-Silicon Valley, CA 94016<br><br>
+                            <i class="fa-solid fa-phone" style="color: var(--accent-primary); margin-right: 10px;"></i> +1 (800) 555-NOXY<br>
+                            <i class="fa-solid fa-envelope" style="color: var(--accent-secondary); margin-right: 10px;"></i> network@noxymobile.ai
+                        </p>
+                    </div>
+                    <!-- Futuristic Live Location Map Panel -->
+<div class="glass-panel reveal" style="height: 250px; overflow: hidden; position: relative; border-radius: 24px;">
+
+    <!-- Background Map -->
+    <iframe 
+        src="https://www.google.com/maps?q=Udupi,Karnataka,India&output=embed"
+        width="100%" 
+        height="100%" 
+        style="border:0; filter: grayscale(0.2) contrast(1.1) brightness(0.9);"
+        allowfullscreen="" 
+        loading="lazy">
+    </iframe>
+
+    <!-- Futuristic Overlay -->
+    <div style="
+        position:absolute;
+        inset:0;
+        background: linear-gradient(
+            to top,
+            rgba(5,10,20,0.85),
+            rgba(5,10,20,0.25),
+            rgba(5,10,20,0.1)
+        );
+        display:flex;
+        align-items:flex-end;
+        padding:20px;
+        pointer-events:none;
+    ">
+
+        <!-- Location Card -->
+        <div style="
+            width:100%;
+            backdrop-filter: blur(14px);
+            background: rgba(255,255,255,0.08);
+            border:1px solid rgba(255,255,255,0.12);
+            border-radius:20px;
+            padding:18px;
+            box-shadow: 0 0 30px rgba(0,255,255,0.08);
+        ">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                flex-wrap:wrap;
+                gap:15px;
+            ">
+
+                <!-- Left Info -->
+                <div>
+                    <h2 style="
+                        margin:0;
+                        font-size:1.2rem;
+                        color:white;
+                        display:flex;
+                        align-items:center;
+                        gap:10px;
+                    ">
+                        <i class="fa-solid fa-location-dot" 
+                           style="color:#00f0ff;"></i>
+
+                        Udupi, Karnataka
+                    </h2>
+
+                    <p style="
+                        margin-top:8px;
+                        color:rgba(255,255,255,0.75);
+                        font-size:0.9rem;
+                        line-height:1.5;
+                    ">
+                        Future Smart City Monitoring Zone<br>
+                        Secure Geo Tracking Enabled • India
+                    </p>
+                </div>
+
+                <!-- Status -->
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:10px;
+                    background:rgba(0,255,170,0.12);
+                    border:1px solid rgba(0,255,170,0.3);
+                    padding:10px 16px;
+                    border-radius:14px;
+                    color:#00ffb3;
+                    font-size:0.85rem;
+                    font-weight:600;
+                ">
+                    <span style="
+                        width:10px;
+                        height:10px;
+                        border-radius:50%;
+                        background:#00ffb3;
+                        box-shadow:0 0 12px #00ffb3;
+                        animation:pulse 1.5s infinite;
+                    "></span>
+
+                    LIVE LOCATION ACTIVE
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Pulse Animation -->
+<style>
+@keyframes pulse{
+    0%{
+        transform:scale(1);
+        opacity:1;
+    }
+    50%{
+        transform:scale(1.4);
+        opacity:0.6;
+    }
+    100%{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+</style>
+
+                <!-- Live Message Composition Frame -->
+                <div class="contact-form-panel glass-panel reveal">
+                    <form id="secure-comms-form" onsubmit="handleFormSubmission(event)">
+                        <div class="form-group">
+                            <label>Identity Alias / Name</label>
+                            <input type="text" id="contact-name" required placeholder="e.g. Operator Vance">
+                        </div>
+                        <div class="form-group">
+                            <label>Secure Network Email Routing Address</label>
+                            <input type="email" id="contact-email" required placeholder="operator@network.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Transmission Payload / Message Content</label>
+                            <textarea id="contact-message" rows="5" required placeholder="Type operational directives or inquiries here..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-premium" style="width: 100%; justify-content: center;">Transmit Secure Packet</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Integrated Core FAQ Accordion System Component -->
+            <div class="faq-section">
+                <h3 style="text-align: center; font-size: 2rem; margin-bottom: 30px;">Knowledge Cache (FAQ)</h3>
+                <div class="faq-accordion">
+                    <div class="faq-item">
+                        <div class="faq-header" onclick="toggleFaqAccordion(this)">
+                            What constitutes the primary architecture of Noxy OS?
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-body">
+                            Noxy OS is built upon a deterministic microkernel designed to prioritize security isolation zones and provide hard operational guarantees for real-time localized neural mesh engine requests.
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-header" onclick="toggleFaqAccordion(this)">
+                            How are trade-in logistics verified and assessed?
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-body">
+                            Upon initiation via the interface, your current platform undergoes an automated firmware metric scan reporting physical processor degradation values to calculate optimal structural credits instantaneously.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ==========================================================================
+       6. LUXURY MASTER FOOTER DESIGN
+       ========================================================================== -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand-pane">
+                <a href="#home" class="logo-text" onclick="switchPage('home')">NOXY<span>MOBILE</span></a>
+                <p>Architecting consumer computing nodes tailored exclusively for the next evolutionary leap in unified intelligence networks.</p>
+                <div class="social-row">
+                    <a href="#" class="icon-btn" title="X Terminal"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" class="icon-btn" title="Discord Guild"><i class="fa-brands fa-discord"></i></a>
+                    <a href="#" class="icon-btn" title="GitHub Repository"><i class="fa-brands fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links-pane">
+                <h5>Navigation Links</h5>
+                <ul>
+                    <li><a href="#home" onclick="switchPage('home')">Home Matrix</a></li>
+                    <li><a href="#shop" onclick="switchPage('shop')">E-Shop Grid</a></li>
+                    <li><a href="#about" onclick="switchPage('about')">Our History</a></li>
+                    <li><a href="#services" onclick="switchPage('services')">Protection Services</a></li>
+                </ul>
+            </div>
+            <div class="footer-links-pane">
+                <h5>Ecosystem Portals</h5>
+                <ul>
+                    <li><a href="#offers" onclick="switchPage('offers')">Flash Convergence</a></li>
+                    <li><a href="#contact" onclick="switchPage('contact')">Secure Channel</a></li>
+                    <li><a href="#testimonials" onclick="switchPage('testimonials')">Node Feedback</a></li>
+                </ul>
+            </div>
+            <div class="footer-links-pane">
+                <h5>Intelligence Briefing</h5>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5;">Subscribe to receive encrypted cryptographic device release notifications.</p>
+                <div class="newsletter-box">
+                    <input type="email" placeholder="network@domain.com">
+                    <button class="icon-btn" style="background: var(--text-primary); color: var(--bg-primary);" onclick="alert('Email successfully appended to operational broadcast rosters.')"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 NOXYMOBILE Systems Inc. Sovereign Operations Framework. All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- Back to top action trigger -->
+    <button id="back-to-top" title="Elevate to Summit" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+
+    <!-- ==========================================================================
+       DYNAMIC E-COMMERCE DATA & ADVANCED ARCHITECTURAL JAVASCRIPT ENGINE
+       ========================================================================== -->
+    <script>
+        /* ==========================================================================
+           1. PRODUCT DATA MATRIX & STORAGE DICTIONARY ARCHITECTURE
+           ========================================================================== */
+        const PRODUCTS_DATABASE = [
+            { id: "p1", name: "iPhone 17 Pro Matrix", price: 1199, brand: "Apple", rating: 4.9, img: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=500&q=80", featured: true },
+            { id: "p2", name: "Noxy Alpha Carbon", price: 1099, brand: "OnePlus", rating: 4.8, img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80", featured: true },
+            { id: "p3", name: "Quantum Fold X3", price: 1799, brand: "Samsung", rating: 4.7, img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=500&q=80", featured: true },
+            { id: "p4", name: "Chrono Zero Matrix", price: 899, brand: "Google", rating: 4.6, img: "https://images.unsplash.com/photo-1565630916779-e303be97b6f5?auto=format&fit=crop&w=500&q=80", featured: true },
+            { id: "p5", name: "Aero Matrix Glass", price: 999, brand: "OnePlus", rating: 4.5, img: "https://images.unsplash.com/photo-1573148195900-7845dcb9b127?auto=format&fit=crop&w=500&q=80", featured: false },
+            { id: "p6", name: "Legacy Node Prime", price: 1199, brand: "Apple", rating: 4.9, img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=500&q=80", featured: false },
+            { id: "p7", name: "Titanium Galaxy Horizon", price: 1399, brand: "Samsung", rating: 4.8, img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=500&q=80", featured: false },
+            { id: "p8", name: "Neural Element Onyx", price: 799, brand: "Google", rating: 4.7, img: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=500&q=80", featured: false }
+        ];
+
+        let SHOP_CART_STATE = 0;
+        let activeFeaturedIndex = 0;
+
+        /* ==========================================================================
+           2. INTERACTIVE LIFE CYCLE & INITIALIZATION HOOKS
+           ========================================================================== */
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeSystemLoader();
+            initializeThemeControl();
+            renderShopProductsGrid(PRODUCTS_DATABASE);
+            renderFeaturedSlider();
+            setupScrollAnimations();
+            setupInteractiveMouseListeners();
+            initializeFlashCountdown();
+            autoRunTestimonialCarousel();
+        });
+
+        /* Multi-Stage Script Simulated Boot Loading Experience */
+        function initializeSystemLoader() {
+            const statusTexts = ["Loading Frameworks...", "Binding Laser UI Shaders...", "Syncing Distributed Cache...", "Active"];
+            let stage = 0;
+            const statusTextElement = document.getElementById("loader-status-text");
+            
+            const stageInterval = setInterval(() => {
+                if(stage < statusTexts.length - 1) {
+                    statusTextElement.innerText = statusTexts[stage];
+                    stage++;
+                }
+            }, 600);
+
+            window.addEventListener("load", () => {
+                setTimeout(() => {
+                    clearInterval(stageInterval);
+                    statusTextElement.innerText = "System Matrix Clear";
+                    const loader = document.getElementById("loader-wrapper");
+                    loader.style.opacity = "0";
+                    loader.style.visibility = "hidden";
+                    triggerStatisticCounters();
+                }, 2000);
+            });
+        }
+
+        /* ==========================================================================
+           3. CORE INTERACTIVE NAVIGATION & ROUTING SYSTEMS
+           ========================================================================== */
+        function switchPage(targetSectionId) {
+            const elements = document.querySelectorAll('.page-section');
+            elements.forEach(section => {
+                section.classList.remove('active-section');
+            });
+            
+            const targetedNode = document.getElementById(targetSectionId);
+            if(targetedNode) {
+                targetedNode.classList.add('active-section');
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }
+
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => {
+                link.classList.remove('active');
+                if(link.getAttribute('href') === `#${targetSectionId}`) {
+                    link.classList.add('active');
+                }
+            });
+
+            document.getElementById("navbar-links").classList.remove("mobile-active");
+        }
+
+        document.getElementById("mobile-menu-icon").addEventListener("click", () => {
+            document.getElementById("navbar-links").classList.toggle("mobile-active");
+        });
+
+        /* ==========================================================================
+           4. VISUAL EFFECTS, INTUITIVE HOVERS & PARALLAX TRACKERS
+           ========================================================================== */
+        function setupInteractiveMouseListeners() {
+            const glowPointer = document.getElementById("cursor-glow");
+            
+            window.addEventListener("mousemove", (e) => {
+                glowPointer.style.left = `${e.clientX}px`;
+                glowPointer.style.top = `${e.clientY}px`;
+            });
+
+            const showcaseBox = document.querySelector(".hero-showcase");
+            if(showcaseBox) {
+                showcaseBox.addEventListener("mousemove", (e) => {
+                    const bounding = showcaseBox.getBoundingClientRect();
+                    const xTranslation = (e.clientX - bounding.left) - (bounding.width / 2);
+                    const yTranslation = (e.clientY - bounding.top) - (bounding.height / 2);
+                    
+                    const targetedMockup = document.querySelector(".phone-mockup");
+                    targetedMockup.style.transform = `translateY(-20px) rotateX(${-yTranslation * 0.08}deg) rotateY(${xTranslation * 0.08}deg)`;
+                });
+                
+                showcaseBox.addEventListener("mouseleave", () => {
+                    document.querySelector(".phone-mockup").style.transform = `translateY(0) rotateX(0deg) rotateY(0deg)`;
+                });
+            }
+        }
+
+        function setupScrollAnimations() {
+            const revealNodes = document.querySelectorAll('.reveal');
+            
+            const processRevealCheck = () => {
+                const triggerPoint = window.innerHeight * 0.85;
+                revealNodes.forEach(node => {
+                    const elementTop = node.getBoundingClientRect().top;
+                    if(elementTop < triggerPoint) {
+                        node.classList.add('active');
+                    }
+                });
+
+                const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                document.getElementById("scroll-progress").style.width = `${scrollPercentage}%`;
+
+                const bttBtn = document.getElementById("back-to-top");
+                if(window.scrollY > 600) { bttBtn.style.display = "flex"; } else { bttBtn.style.display = "none"; }
+            };
+
+            window.addEventListener('scroll', processRevealCheck);
+            window.addEventListener('resize', processRevealCheck);
+        }
+
+        function triggerStatisticCounters() {
+            const counters = document.querySelectorAll('.counter-val');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const iterationStep = target / 50;
+                
+                const processIncrement = () => {
+                    const value = +counter.innerText;
+                    if(value < target) {
+                        counter.innerText = Math.ceil(value + iterationStep);
+                        setTimeout(processIncrement, 30);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                processIncrement();
+            });
+        }
+
+        /* ==========================================================================
+           5. THEMATIC IMPLEMENTATION SCHEME MANAGERS (Dark/Light)
+           ========================================================================== */
+        function initializeThemeControl() {
+            const themeBtn = document.getElementById("theme-toggle-btn");
+            const trackingKey = "noxymobile-preferred-theme";
+            
+            const executeThemeAllocation = (themeValue) => {
+                document.documentElement.setAttribute("data-theme", themeValue);
+                localStorage.setItem(trackingKey, themeValue);
+                
+                if(themeValue === "light") {
+                    themeBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
+                } else {
+                    themeBtn.innerHTML = `<i class="fa-solid fa-moon"></i>`;
+                }
+            };
+
+            const activeMemorySelection = localStorage.getItem(trackingKey) || "dark";
+            executeThemeAllocation(activeMemorySelection);
+
+            themeBtn.addEventListener("click", () => {
+                const contemporaryState = document.documentElement.getAttribute("data-theme");
+                const alternateState = (contemporaryState === "dark") ? "light" : "dark";
+                executeThemeAllocation(alternateState);
+            });
+        }
+
+        /* ==========================================================================
+           6. E-COMMERCE CORE RENDERING ENGINE & INTERACTIVE PIPELINES
+           ========================================================================== */
+        function renderShopProductsGrid(dataset) {
+            const targetOutputContainer = document.getElementById("main-shop-products-grid");
+            targetOutputContainer.innerHTML = "";
+            
+            if(dataset.length === 0) {
+                targetOutputContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No operational device signatures found matching constraints.</div>`;
+                return;
+            }
+
+            dataset.forEach(item => {
+                const elementCard = document.createElement("div");
+                elementCard.className = "product-card glass-panel";
+                elementCard.innerHTML = `
+                    <button class="card-wishlist" onclick="event.stopPropagation(); alert('Target signature locked inside tracking cloud.')"><i class="fa-regular fa-heart"></i></button>
+                    <div class="card-img-holder">
+                        <img src="${item.img}" alt="${item.name}">
+                    </div>
+                    <div>
+                        <div class="card-brand-label">${item.brand}</div>
+                        <div class="card-title" onclick="routeToProductSpecificDetails('${item.id}')">${item.name}</div>
+                        <div class="card-rating"><i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star-half-stroke"></i> <span>${item.rating}</span></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-price">$${item.price}.00</div>
+                        <button class="card-add-btn" onclick="event.stopPropagation(); triggerAddToCartAction()"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                `;
+                targetOutputContainer.appendChild(elementCard);
+            });
+        }
+
+        function renderFeaturedSlider() {
+            const targetContainer = document.getElementById("featured-slider-track");
+            const collection = PRODUCTS_DATABASE.filter(p => p.featured);
+            
+            collection.forEach(item => {
+                const elementSlide = document.createElement("div");
+                elementSlide.className = "slider-card product-card glass-panel";
+                elementSlide.innerHTML = `
+                    <div class="card-img-holder">
+                        <img src="${item.img}" alt="${item.name}">
+                    </div>
+                    <div>
+                        <div class="card-brand-label">${item.brand}</div>
+                        <div class="card-title" onclick="routeToProductSpecificDetails('${item.id}')">${item.name}</div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-price">$${item.price}.00</div>
+                        <button class="card-add-btn" onclick="event.stopPropagation(); triggerAddToCartAction()"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                `;
+                targetContainer.appendChild(elementSlide);
+            });
+        }
+
+        function slideFeatured(directionVector) {
+            const sliderTrack = document.getElementById("featured-slider-track");
+            const totalFeaturedItems = PRODUCTS_DATABASE.filter(p => p.featured).length;
+            
+            activeFeaturedIndex += directionVector;
+            if(activeFeaturedIndex < 0) { activeFeaturedIndex = totalFeaturedItems - 1; }
+            if(activeFeaturedIndex >= totalFeaturedItems) { activeFeaturedIndex = 0; }
+            
+            const linearDisplacementWidth = 350; 
+            sliderTrack.style.transform = `translateX(${-activeFeaturedIndex * linearDisplacementWidth}px)`;
+        }
+
+        const queryBox = document.getElementById("product-search-input");
+        const interfaceTabs = document.querySelectorAll(".brand-tab");
+        let activeFilterString = "all";
+
+        const executionPipelineFilter = () => {
+            const processingQuery = queryBox.value.toLowerCase().trim();
+            
+            const parsingResultCollection = PRODUCTS_DATABASE.filter(item => {
+                const logicalMatchBrand = (activeFilterString === "all" || item.brand.toLowerCase() === activeFilterString.toLowerCase());
+                const logicalMatchQuery = item.name.toLowerCase().includes(processingQuery) || item.brand.toLowerCase().includes(processingQuery);
+                return logicalMatchBrand && logicalMatchQuery;
+            });
+
+            document.getElementById("shop-results-heading").innerText = `Search Matrix Results (${parsingResultCollection.length} Found)`;
+            renderShopProductsGrid(parsingResultCollection);
+        };
+
+        queryBox.addEventListener("input", executionPipelineFilter);
+        interfaceTabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                interfaceTabs.forEach(t => t.classList.remove("active-tab"));
+                tab.classList.add("active-tab");
+                activeFilterString = tab.getAttribute("data-brand");
+                executionPipelineFilter();
+            });
+        });
+
+        function routeToProductSpecificDetails(idCode) {
+            const targetedProductObj = PRODUCTS_DATABASE.find(p => p.id === idCode);
+            if(targetedProductObj) {
+                document.getElementById("detail-title").innerText = targetedProductObj.name;
+                document.getElementById("detail-price").innerText = `$${targetedProductObj.price}.00`;
+                document.getElementById("detail-main-img").src = targetedProductObj.img;
+                switchPage('details');
+            }
+        }
+
+        function triggerAddToCartAction() {
+            SHOP_CART_STATE++;
+            const nodeBadge = document.getElementById("cart-counter");
+            nodeBadge.innerText = SHOP_CART_STATE;
+            
+            nodeBadge.style.transform = "scale(1.4)";
+            setTimeout(() => { nodeBadge.style.transform = "scale(1)"; }, 200);
+        }
+
+        function switchDetailTab(triggerRef, blockId) {
+            document.querySelectorAll(".tab-trigger").forEach(t => t.classList.remove("active-trigger"));
+            triggerRef.classList.add("active-trigger");
+            
+            document.getElementById("specs-tab-content").style.display = "none";
+            document.getElementById("reviews-tab-content").style.display = "none";
+            document.getElementById(blockId).style.display = "block";
+        }
+
+        function changeDetailThumb(thumbElement, imageSrc) {
+            document.querySelectorAll(".thumb-node").forEach(t => t.classList.remove("active-thumb"));
+            thumbElement.classList.add("active-thumb");
+            document.getElementById("detail-main-img").src = imageSrc;
+        }
+
+        function selectColorDot(dotRef) {
+            document.querySelectorAll(".color-dot").forEach(d => d.classList.remove("active-dot"));
+            dotRef.classList.add("active-dot");
+        }
+
+        /* ==========================================================================
+           7. AUTOMATED COUNTER & FAQ ACCORDION ENGINE
+           ========================================================================== */
+        function initializeFlashCountdown() {
+            let totalRunningSeconds = 15522; 
+            
+            const processingClockInterval = setInterval(() => {
+                if(totalRunningSeconds <= 0) { clearInterval(processingClockInterval); return; }
+                totalRunningSeconds--;
+                
+                const computedHours = Math.floor(totalRunningSeconds / 3600);
+                const computedMins = Math.floor((totalRunningSeconds % 3600) / 60);
+                const computedSecs = totalRunningSeconds % 60;
+                
+                document.getElementById("timer-hours").innerText = String(computedHours).padStart(2, '0');
+                document.getElementById("timer-mins").innerText = String(computedMins).padStart(2, '0');
+                document.getElementById("timer-secs").innerText = String(computedSecs).padStart(2, '0');
+            }, 1000);
+        }
+
+        function autoRunTestimonialCarousel() {
+            let trackedPosition = 0;
+            const sliderTrack = document.getElementById("testimonial-slider-track");
+            
+            setInterval(() => {
+                trackedPosition = (trackedPosition === 0) ? 100 : 0;
+                if(sliderTrack) {
+                    sliderTrack.style.transform = `translateX(-${trackedPosition}%)`;
+                }
+            }, 6000);
+        }
+
+        function toggleFaqAccordion(headerElement) {
+            const targetedFaqItem = headerElement.parentElement;
+            targetedFaqItem.classList.toggle("active-faq");
+        }
+
+        function handleFormSubmission(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const message = document.getElementById('contact-message').value;
+            const phoneNumber = "917829671246"; // Your WhatsApp number
+
+            // Format the message for WhatsApp
+            const formattedMessage = `*NoxyMobile Inquiry*%0A%0A*Name:* ${encodeURIComponent(name)}%0A*Email:* ${encodeURIComponent(email)}%0A*Message:* ${encodeURIComponent(message)}`;
+            
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${formattedMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
+            alert("Redirecting to WhatsApp for secure packet transmission...");
+            document.getElementById("secure-comms-form").reset();
+        }
+    </script>
+</body>
+</html>
